@@ -455,7 +455,6 @@ class ProjectNextTaskAPI(generics.RetrieveAPIView):
         prepared_tasks = get_prepared_queryset(request, project)
 
         next_task, queue_info = get_next_task(request.user, prepared_tasks, project, dm_queue)
-
         if next_task is None:
             raise NotFound(
                 f'There are still some tasks to complete for the user={request.user}, '

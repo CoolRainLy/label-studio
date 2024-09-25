@@ -21,6 +21,10 @@ def next_task(project, queryset, **kwargs):
 
     request = kwargs['request']
     dm_queue = filters_ordering_selected_items_exist(request.data)
+    print(request.user)
+    print(queryset)
+    print(project)
+    print(dm_queue)
     next_task, queue_info = get_next_task(request.user, queryset, project, dm_queue)
 
     if next_task is None:

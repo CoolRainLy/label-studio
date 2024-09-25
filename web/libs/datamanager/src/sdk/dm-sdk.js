@@ -55,7 +55,7 @@ import { LSFWrapper } from "./lsf-sdk";
 import { taskToLSFormat } from "./lsf-utils";
 
 const DEFAULT_TOOLBAR =
-  "actions columns filters ordering label-button loading-possum error-box | refresh import-button export-button view-toggle";
+  "actions columns filters ordering label-button statistics loading-possum error-box | refresh import-button export-button view-toggle";
 
 const prepareInstruments = (instruments) => {
   const result = Object.entries(instruments).map(([name, builder]) => [name, builder({ inject, observer })]);
@@ -484,7 +484,7 @@ export class DataManager {
 
   get toolbarInstruments() {
     const sections = this.toolbar.split("|").map((s) => s.trim());
-
+    console.log(this.toolbar)
     const instrumentsList = sections.map((section) => {
       return section.split(" ").filter((instrument) => {
         const nativeInstrument = !!instruments[instrument];
@@ -493,11 +493,9 @@ export class DataManager {
         if (!nativeInstrument && !customInstrument) {
           console.warn(`Unknwown instrument detected: ${instrument}. Did you forget to register it?`);
         }
-
         return nativeInstrument || customInstrument;
       });
     });
-
     return instrumentsList;
   }
   static urlJSON = { serializeJsonForUrl, deserializeJsonFromUrl };

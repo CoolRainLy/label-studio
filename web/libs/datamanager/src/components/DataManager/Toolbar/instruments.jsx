@@ -16,6 +16,7 @@ import { OrderButton } from "./OrderButton";
 import { RefreshButton } from "./RefreshButton";
 import { ViewToggle } from "./ViewToggle";
 import {checkPermission} from "../../../../../../apps/labelstudio/src/utils/check-permission";
+import {StatisticsButton, statisticsButton} from "./StatisticsButton";
 
 const style = {
   minWidth: "110px",
@@ -111,7 +112,7 @@ export const instruments = {
     return <LabelButton size={size} />;
   },
   actions: ({ size }) => {
-    return <ActionsButton size={size} style={style} />;
+    return checkPermission() && <ActionsButton size={size} style={style} />;
   },
   "error-box": () => {
     return <ErrorBox />;
@@ -130,4 +131,7 @@ export const instruments = {
       </Interface>
     );
   },
+  statistics: ({size}) => {
+    return checkPermission() && <StatisticsButton size={size} />
+  }
 };

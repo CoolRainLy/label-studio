@@ -144,7 +144,7 @@ export const ProjectsPage = () => {
   );
 };
 
-ProjectsPage.title = "项目";
+ProjectsPage.title = "Projects";
 ProjectsPage.path = "/projects";
 ProjectsPage.exact = true;
 ProjectsPage.routes = ({ store }) => [
