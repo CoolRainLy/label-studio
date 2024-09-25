@@ -171,5 +171,7 @@ export const APIConfig = {
       path: "/../comments/:id",
       method: "delete",
     },
+
+
   },
 };

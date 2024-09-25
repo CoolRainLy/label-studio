@@ -155,6 +155,7 @@ class ViewSerializer(serializers.ModelSerializer):
         ordering = result.pop('ordering', {})
         if ordering:
             result['data']['ordering'] = ordering
+
         return result
 
     @staticmethod
@@ -243,7 +244,6 @@ class CompletedByDMSerializerWithGenericSchema(serializers.PrimaryKeyRelatedFiel
 
 class AnnotationsDMFieldSerializer(AnnotationSerializer):
     completed_by = CompletedByDMSerializerWithGenericSchema(required=False, queryset=User.objects.all())
-
 
 class AnnotationDraftDMFieldSerializer(serializers.SerializerMethodField):
     class Meta:
@@ -372,6 +372,14 @@ class DataManagerTaskSerializer(TaskSerializer):
             ret.pop('annotations', None)
         if not self.context.get('predictions'):
             ret.pop('predictions', None)
+
+        user = self.context['request'].user
+        user_id = user.id
+        is_staff = user.is_staff
+        if not is_staff and 'annotations' in ret:
+            print(1, ret['annotations'])
+            ret['annotations'] = [annotation for annotation in ret['annotations'] if annotation.get('completed_by').get('id') == user_id]
+            print(2, ret['annotations'])
         return ret
 
     def _pretty_results(self, task, field, unique=False):

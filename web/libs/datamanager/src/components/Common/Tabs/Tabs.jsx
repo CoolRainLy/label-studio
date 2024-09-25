@@ -8,6 +8,7 @@ import { Icon } from "../Icon/Icon";
 import Input from "../Input/Input";
 import "./Tabs.scss";
 import { TabsMenu } from "./TabsMenu";
+import {checkPermission} from "../../../../../../apps/labelstudio/src/utils/check-permission";
 
 const { Block, Elem } = BemWithSpecifiContext();
 
@@ -22,6 +23,7 @@ export const Tabs = ({
   tabBarExtraContent,
   allowedActions,
   addIcon,
+  isAuth = false
 }) => {
   const [selectedTab, setSelectedTab] = useState(activeTab);
 
@@ -57,7 +59,7 @@ export const Tabs = ({
               )}
             </Droppable>
           </DragDropContext>
-          {allowedActions.add !== false && <Elem tag={Button} name="add" type="text" onClick={onAdd} icon={addIcon} />}
+          {(!isAuth || checkPermission()) && allowedActions.add !== false && <Elem tag={Button} name="add" type="text" onClick={onAdd} icon={addIcon} />}
         </Elem>
         <Elem name="extra">{tabBarExtraContent}</Elem>
       </Block>
@@ -77,6 +79,7 @@ export const TabsItem = ({
   deletable = true,
   managable = true,
   virtual = false,
+  isAuth = false,
 }) => {
   const { switchTab, selectedTab, lastTab, allowedActions } = useContext(TabsContext);
   const [currentTitle, setCurrentTitle] = useState(title);
@@ -98,7 +101,7 @@ export const TabsItem = ({
   );
 
   const showMenu = useMemo(() => {
-    return managable && (tabIsEditable || tabIsDeletable || tabIsCloneable);
+    return (!isAuth || checkPermission()) && managable && (tabIsEditable || tabIsDeletable || tabIsCloneable);
   }, [managable, tabIsEditable, tabIsDeletable, tabIsCloneable]);
 
   const saveTabTitle = useCallback(

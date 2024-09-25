@@ -21,6 +21,7 @@ import { Block } from "../../../utils/bem";
 import { FieldsButton } from "../FieldsButton";
 import { LsGear, LsGearNewUI } from "../../../assets/icons";
 import { FF_DEV_3873, FF_LOPS_E_10, FF_LOPS_E_3, isFF } from "../../../utils/feature-flags";
+import {checkPermission} from "../../../../../../apps/labelstudio/src/utils/check-permission";
 
 const Decorator = (decoration) => {
   return {
@@ -130,26 +131,28 @@ export const Table = observer(
         };
 
         return (
-          <Tooltip title="Show task source">
-            <Button
-              type="link"
-              style={{ width: 32, height: 32, padding: 0 }}
-              onClick={() => {
-                modal({
-                  title: `Source for task ${out?.id}`,
-                  style: { width: 800 },
-                  body: <TaskSourceView content={out} onTaskLoad={onTaskLoad} sdkType={type} />,
-                });
-              }}
-              icon={
-                isFF(FF_LOPS_E_10) ? (
-                  <Icon icon={RiCodeLine} style={{ width: 24, height: 24 }} />
-                ) : (
-                  <Icon icon={FaCode} />
-                )
-              }
-            />
-          </Tooltip>
+          <>
+            {checkPermission() && <Tooltip title="Show task source">
+              <Button
+                type="link"
+                style={{width: 32, height: 32, padding: 0}}
+                onClick={() => {
+                  modal({
+                    title: `Source for task ${out?.id}`,
+                    style: {width: 800},
+                    body: <TaskSourceView content={out} onTaskLoad={onTaskLoad} sdkType={type}/>,
+                  });
+                }}
+                icon={
+                  isFF(FF_LOPS_E_10) ? (
+                    <Icon icon={RiCodeLine} style={{width: 24, height: 24}}/>
+                  ) : (
+                    <Icon icon={FaCode}/>
+                  )
+                }
+              />
+            </Tooltip>}
+          </>
         );
       },
     });

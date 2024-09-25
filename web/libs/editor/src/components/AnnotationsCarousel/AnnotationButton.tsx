@@ -26,6 +26,7 @@ import { Tooltip } from "./../../common/Tooltip/Tooltip";
 // @ts-ignore
 import { confirm } from "../../common/Modal/Modal";
 import { observer } from "mobx-react";
+import {checkPermission} from "../../../../../apps/labelstudio/src/utils/check-permission";
 interface AnnotationButtonInterface {
   entity?: any;
   capabilities?: any;
@@ -241,16 +242,16 @@ export const AnnotationButton = observer(
             </Elem>
           )}
         </Elem>
-        <Elem name="contextMenu">
+        {checkPermission() && <Elem name="contextMenu">
           <Dropdown.Trigger
-            content={<ContextMenu entity={entity} capabilities={capabilities} annotationStore={annotationStore} />}
-            onToggle={(isVisible) => setIsContextMenuOpen(isVisible)}
+              content={<ContextMenu entity={entity} capabilities={capabilities} annotationStore={annotationStore}/>}
+              onToggle={(isVisible) => setIsContextMenuOpen(isVisible)}
           >
             <Elem name="ellipsisIcon">
-              <IconEllipsis width={28} height={28} />
+              <IconEllipsis width={28} height={28}/>
             </Elem>
           </Dropdown.Trigger>
-        </Elem>
+        </Elem>}
       </Block>
     );
   },

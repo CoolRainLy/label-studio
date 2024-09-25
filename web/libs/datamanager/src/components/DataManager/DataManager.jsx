@@ -84,6 +84,7 @@ const TabsSwitch = switchInjector(
         tabBarExtraContent={<ProjectSummary />}
         addIcon={<LSPlus />}
         allowedActions={editable}
+        isAuth={true}
       >
         {tabs.map((tab, index) => (
           <Draggable key={tab.key} draggableId={tab.key} index={index}>
@@ -113,6 +114,7 @@ const TabsSwitch = switchInjector(
                   editable={tab.editable}
                   deletable={tab.deletable}
                   virtual={tab.virtual}
+                  isAuth={true}
                 />
               </Elem>
             )}

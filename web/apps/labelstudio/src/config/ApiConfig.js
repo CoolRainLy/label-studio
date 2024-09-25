@@ -73,6 +73,11 @@ export const API_CONFIG = {
     createWebhook: "POST:/webhooks",
     deleteWebhook: "DELETE:/webhooks/:pk",
     webhooksInfo: "/webhooks/info",
+
+    // Auth
+    groups: "/auth/groups",
+
+
   },
   alwaysExpectJSON: false,
 };

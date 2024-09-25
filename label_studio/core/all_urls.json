@@ -1714,5 +1714,11 @@
         "module": "django.contrib.auth.views.LogoutView",
         "name": "rest_framework:logout",
         "decorators": ""
+    },
+    {
+        "url": "/auth",
+        "module": "mju_auth.views.auth_list",
+        "name": "auth:auth-list",
+        "decorators": ""
     }
 ]

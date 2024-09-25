@@ -17,6 +17,7 @@ import "./Table.scss";
 import { Button } from "../../Common/Button/Button";
 import { useState } from "react";
 import { useEffect } from "react";
+import {checkPermission} from "../../../../../../apps/labelstudio/src/utils/check-permission";
 
 const injector = inject(({ store }) => {
   const { dataStore, currentView } = store;
@@ -206,9 +207,9 @@ export const DataView = injector(
               </Elem>
               {!hasData && !!store.interfaces.get("import") && (
                 <Elem name="navigation">
-                  <ImportButton look="primary" href="./import">
+                  {checkPermission() && <ImportButton look="primary" href="./import">
                     Go to import
-                  </ImportButton>
+                  </ImportButton>}
                 </Elem>
               )}
             </Block>

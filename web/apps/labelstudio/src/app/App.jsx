@@ -1,12 +1,12 @@
 /* global Sentry */
 
 import { createBrowserHistory } from "history";
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { render } from "react-dom";
 import { Router } from "react-router-dom";
 import { LEAVE_BLOCKER_KEY, leaveBlockerCallback } from "../components/LeaveBlocker/LeaveBlocker";
 import { initSentry } from "../config/Sentry";
-import { ApiProvider } from "../providers/ApiProvider";
+import {ApiProvider, useAPI} from "../providers/ApiProvider";
 import { AppStoreProvider } from "../providers/AppStoreProvider";
 import { ConfigProvider } from "../providers/ConfigProvider";
 import { MultiProvider } from "../providers/MultiProvider";
@@ -19,6 +19,7 @@ import ErrorBoundary from "./ErrorBoundary";
 import { RootPage } from "./RootPage";
 import { FF_OPTIC_2, FF_UNSAVED_CHANGES, isFF } from "../utils/feature-flags";
 import { ToastProvider, ToastViewport } from "../components/Toast/Toast";
+import {checkPermission, getCurrentUserInfo} from "../utils/check-permission";
 
 const baseURL = new URL(APP_SETTINGS.hostname || location.origin);
 export const UNBLOCK_HISTORY_MESSAGE = "UNBLOCK_HISTORY";
@@ -51,6 +52,22 @@ window.LSH = browserHistory;
 initSentry(browserHistory);
 
 const App = ({ content }) => {
+  const [loading, setLoading] = useState(true)
+
+  useEffect(async () => {
+    setLoading(true)
+    await getCurrentUserInfo().then(() => {
+      setLoading(false)
+    })
+  }, []);
+
+
+  if(loading){
+    return (
+      <></>
+    )
+  }
+
   return (
     <ErrorBoundary>
       <Router history={browserHistory}>

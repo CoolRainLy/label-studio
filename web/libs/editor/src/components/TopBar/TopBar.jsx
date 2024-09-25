@@ -20,7 +20,6 @@ export const TopBar = observer(({ store }) => {
   const isPrediction = entity?.type === "prediction";
 
   const isViewAll = annotationStore?.viewingAll === true;
-
   return store ? (
     <Block name="topbar" mod={{ newLabelingUI: isFF(FF_DEV_3873) }}>
       {isFF(FF_DEV_3873) ? (

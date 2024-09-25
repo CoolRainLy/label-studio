@@ -27,6 +27,7 @@ import "./MenuContent.scss";
 import "./MenuSidebar.scss";
 import { ModelsPage } from "../../pages/Organization/Models/ModelsPage";
 import { FF_DIA_835, isFF } from "../../utils/feature-flags";
+import {checkPermission} from "../../utils/check-permission";
 
 export const MenubarContext = createContext();
 
@@ -183,35 +184,11 @@ export const Menubar = ({ enabled, defaultOpened, defaultPinned, children, onSid
               style={{ width: 240 }}
             >
               <Menu>
-                <Menu.Item label="Projects" to="/projects" icon={<IconFolder />} data-external exact />
-                <Menu.Item label="Organization" to="/organization" icon={<IconPersonInCircle />} data-external exact />
+                <Menu.Item label="项目" to="/projects" icon={<IconFolder />} data-external exact />
+                {checkPermission() && <Menu.Item label="组织" to="/organization" icon={<IconPersonInCircle/>} data-external exact/>}
                 {isFF(FF_DIA_835) && <Menu.Item label="Models" to={ModelsPage.path} icon={<IconModel />} exact />}
 
                 <Menu.Spacer />
-
-                <VersionNotifier showNewVersion />
-
-                <Menu.Item
-                  label="API"
-                  href="https://api.labelstud.io/api-reference/introduction/getting-started"
-                  icon={<IconTerminal />}
-                  target="_blank"
-                />
-                <Menu.Item label="Docs" href="https://labelstud.io/guide" icon={<IconBook />} target="_blank" />
-                <Menu.Item
-                  label="GitHub"
-                  href="https://github.com/HumanSignal/label-studio"
-                  icon={<LsGitHub />}
-                  target="_blank"
-                  rel="noreferrer"
-                />
-                <Menu.Item
-                  label="Slack Community"
-                  href="https://slack.labelstud.io/?source=product-menu"
-                  icon={<LsSlack />}
-                  target="_blank"
-                  rel="noreferrer"
-                />
 
                 <VersionNotifier showCurrentVersion />
 

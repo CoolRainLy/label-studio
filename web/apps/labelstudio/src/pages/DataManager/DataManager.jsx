@@ -18,6 +18,7 @@ import { ToastContext } from "../../components/Toast/Toast";
 import { FF_OPTIC_2, isFF } from "../../utils/feature-flags";
 
 import "./DataManager.scss";
+import {checkPermission} from "../../utils/check-permission";
 
 const loadDependencies = () => [import("@humansignal/datamanager"), import("@humansignal/editor")];
 
@@ -218,9 +219,9 @@ DataManagerPage.context = ({ dmRef }) => {
   const { project } = useProject();
   const [mode, setMode] = useState(dmRef?.mode ?? "explorer");
 
-  const links = {
-    "/settings": "Settings",
-  };
+  const links = checkPermission() ? {
+    "/settings": "Settings"
+  } : {};
 
   const updateCrumbs = (currentMode) => {
     const isExplorer = currentMode === "explorer";

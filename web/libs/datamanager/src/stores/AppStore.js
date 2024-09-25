@@ -10,6 +10,7 @@ import { TabStore } from "./Tabs";
 import { CustomJSON } from "./types";
 import { User } from "./Users";
 import { ActivityObserver } from "../utils/ActivityObserver";
+import {checkPermission} from "../../../../apps/labelstudio/src/utils/check-permission";
 
 /**
  * @type {ActivityObserver | null}
@@ -342,6 +343,7 @@ export const AppStore = types
             self.SDK.invoke("settingsClicked");
           },
           okText: "Go to setup",
+          showOk: checkPermission()
         });
         return false;
       }

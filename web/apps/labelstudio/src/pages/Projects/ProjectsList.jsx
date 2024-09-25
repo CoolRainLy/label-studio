@@ -6,6 +6,7 @@ import { LsBulb, LsCheck, LsEllipsis, LsMinus } from "../../assets/icons";
 import { Button, Dropdown, Menu, Pagination, Userpic } from "../../components";
 import { Block, Elem } from "../../utils/bem";
 import { absoluteURL } from "../../utils/helpers";
+import {checkPermission} from "../../utils/check-permission";
 
 const DEFAULT_CARD_COLORS = ["#FFFFFF", "#FDFDFC"];
 
@@ -76,7 +77,7 @@ const ProjectCard = ({ project }) => {
                 e.preventDefault();
               }}
             >
-              <Dropdown.Trigger
+              {checkPermission() && <Dropdown.Trigger
                 content={
                   <Menu contextual>
                     <Menu.Item href={`/projects/${project.id}/settings`}>Settings</Menu.Item>
@@ -84,8 +85,8 @@ const ProjectCard = ({ project }) => {
                   </Menu>
                 }
               >
-                <Button size="small" type="text" icon={<LsEllipsis />} />
-              </Dropdown.Trigger>
+                <Button size="small" type="text" icon={<LsEllipsis/>}/>
+              </Dropdown.Trigger>}
             </Elem>
           </Elem>
           <Elem name="summary">
