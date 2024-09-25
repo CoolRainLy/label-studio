@@ -61,6 +61,9 @@ export const APIConfig = {
     /** Single task (sample) */
     task: "/tasks/:taskID",
 
+    /** 获取项目下的所有标注信息 **/
+    projectAnnotation: "/../projects/:projectID/annotations",
+
     /** Next task (labelstream, default sequential) */
     nextTask: "/tasks/next",
 

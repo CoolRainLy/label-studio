@@ -16,7 +16,7 @@ from core.utils.io import find_dir, find_file, read_yaml
 from data_manager.functions import filters_ordering_selected_items_exist, get_prepared_queryset
 from django.conf import settings
 from django.db import IntegrityError
-from django.db.models import F
+from django.db.models import F, Q
 from django.http import Http404
 from django.utils.decorators import method_decorator
 from django_filters import CharFilter, FilterSet
@@ -45,12 +45,13 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import exception_handler
-from tasks.models import Task
+from tasks.models import Task, Annotation
 from tasks.serializers import (
     NextTaskSerializer,
     TaskSerializer,
     TaskSimpleSerializer,
     TaskWithAnnotationsAndPredictionsAndDraftsSerializer,
+    AnnotationSerializer
 )
 from webhooks.models import WebhookAction
 from webhooks.utils import api_webhook, api_webhook_for_delete, emit_webhooks_for_instance
@@ -165,10 +166,10 @@ _project_schema = openapi.Schema(
         'control_weights': openapi.Schema(
             title='control_weights',
             description='Dict of weights for each control tag in metric calculation. Each control tag (e.g. label or choice) will '
-            'have its own key in control weight dict with weight for each label and overall weight. '
-            'For example, if a bounding box annotation with a control tag named my_bbox should be included with 0.33 weight in agreement calculation, '
-            'and the first label Car should be twice as important as Airplane, then you need to specify: '
-            "{'my_bbox': {'type': 'RectangleLabels', 'labels': {'Car': 1.0, 'Airplane': 0.5}, 'overall': 0.33}",
+                        'have its own key in control weight dict with weight for each label and overall weight. '
+                        'For example, if a bounding box annotation with a control tag named my_bbox should be included with 0.33 weight in agreement calculation, '
+                        'and the first label Car should be twice as important as Airplane, then you need to specify: '
+                        "{'my_bbox': {'type': 'RectangleLabels', 'labels': {'Car': 1.0, 'Airplane': 0.5}, 'overall': 0.33}",
             type=openapi.TYPE_OBJECT,
             example={
                 'my_bbox': {'type': 'RectangleLabels', 'labels': {'Car': 1.0, 'Airplaine': 0.5}, 'overall': 0.33}
@@ -688,14 +689,14 @@ class ProjectReimportAPI(generics.RetrieveAPIView):
             settings.HOSTNAME or 'https://localhost:8080'
         ),
         manual_parameters=[
-            openapi.Parameter(
-                name='id',
-                type=openapi.TYPE_INTEGER,
-                in_=openapi.IN_PATH,
-                description='A unique integer value identifying this project.',
-            ),
-        ]
-        + paginator_help('tasks', 'Projects')['manual_parameters'],
+                              openapi.Parameter(
+                                  name='id',
+                                  type=openapi.TYPE_INTEGER,
+                                  in_=openapi.IN_PATH,
+                                  description='A unique integer value identifying this project.',
+                              ),
+                          ]
+                          + paginator_help('tasks', 'Projects')['manual_parameters'],
     ),
 )
 class ProjectTaskListAPI(GetParentObjectMixin, generics.ListCreateAPIView, generics.DestroyAPIView):
@@ -833,3 +834,39 @@ class ProjectModelVersions(generics.RetrieveAPIView):
         count = project.delete_predictions(model_version=model_version)
 
         return Response(data=count)
+
+
+class ProjectAnnotationAPI(generics.RetrieveAPIView):
+    parser_classes = (JSONParser, FormParser, MultiPartParser)
+    permission_required = ViewClassPermission(
+        GET=all_permissions.annotations_view,
+        POST=all_permissions.annotations_create,
+    )
+    parent_queryset = Task.objects.all()
+
+    serializer_class = AnnotationSerializer
+
+    def get(self, request, pk):
+        project_id = pk
+        tasks = Task.objects.filter(project_id=project_id)
+        annotations = Annotation.objects.filter(task__in=tasks, was_cancelled=False)
+        serializer = AnnotationSerializer(annotations, many=True)  # 确保设置 many=True
+        res = {}
+        for annotation in serializer.data:
+            user_id = annotation['completed_by']
+            current_user_result = res.setdefault(user_id, {
+                'user_id': user_id,
+                'username': annotation['created_username'].split(",")[0],
+                'count': 0,
+                'result': {},
+            })
+            for result in annotation['result']:
+                label = result['value']['polygonlabels'][0]
+                current_count = current_user_result.get('result').setdefault(label, 0)
+                current_user_result.get('result')[label] = current_count + 1
+                current_user_result['count'] += 1
+
+        res2 = []
+        for k, v in res.items():
+            res2.append(v)
+        return Response(res2)

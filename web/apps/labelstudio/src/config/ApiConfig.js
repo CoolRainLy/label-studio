@@ -74,10 +74,6 @@ export const API_CONFIG = {
     deleteWebhook: "DELETE:/webhooks/:pk",
     webhooksInfo: "/webhooks/info",
 
-    // Auth
-    groups: "/auth/groups",
-
-
   },
   alwaysExpectJSON: false,
 };
