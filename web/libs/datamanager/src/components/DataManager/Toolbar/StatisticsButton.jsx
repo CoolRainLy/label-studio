@@ -85,7 +85,7 @@ export const StatisticsButton = injector(({ store, size }) => {
   return (
     <div>
       <Button size={size} mod={{ size: size ?? "medium" }} onClick={statistics} >
-        查看统计情况
+        Statistics
       </Button>
     </div>
   )

@@ -56,9 +56,11 @@ export const Userpic = forwardRef(({ username, size, src, user, className, showU
         onError={() => setFinalSrc(FALLBACK_IMAGE)}
       />
       {nameVisible && (
-        <Elem tag="span" name="username">
-          {(finalUsername ?? "").toUpperCase()}
-        </Elem>
+        <>
+          <Elem tag="span" name="username">
+            {(finalUsername ?? "").toUpperCase()}
+          </Elem>
+        </>
       )}
     </Block>
   );

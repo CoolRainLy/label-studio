@@ -15,6 +15,7 @@ import "./PeopleInvitation.scss";
 import { PeopleList } from "./PeopleList";
 import "./PeoplePage.scss";
 import { SelectedUser } from "./SelectedUser";
+import {checkPermission} from "../../../utils/check-permission";
 
 const InvitationModal = ({ link }) => {
   return (
@@ -124,9 +125,9 @@ export const PeoplePage = () => {
           <Space />
 
           <Space>
-            <Button icon={<LsPlus />} primary onClick={showInvitationModal}>
+            {checkPermission() && <Button icon={<LsPlus/>} primary onClick={showInvitationModal}>
               Add People
-            </Button>
+            </Button>}
           </Space>
         </Space>
       </Elem>

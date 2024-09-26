@@ -101,6 +101,7 @@ function smart_submit(done, form_id) {
     data: $(f).serialize(),
 
     error: function (result, textStatus, errorThrown) {
+      console.log(result)
       console.log('smart_submit ajax error', result);
 
       // call done function if it's defined and ignore all the rest

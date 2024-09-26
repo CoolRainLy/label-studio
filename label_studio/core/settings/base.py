@@ -294,9 +294,9 @@ AUTHENTICATION_BACKENDS = [
     'rules.permissions.ObjectPermissionBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
-USE_USERNAME_FOR_LOGIN = False
+USE_USERNAME_FOR_LOGIN = True
 
-DISABLE_SIGNUP_WITHOUT_LINK = get_bool_env('DISABLE_SIGNUP_WITHOUT_LINK', False)
+DISABLE_SIGNUP_WITHOUT_LINK = get_bool_env('DISABLE_SIGNUP_WITHOUT_LINK', True)
 
 # Password validation:
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators

@@ -4,9 +4,10 @@ import logging
 
 import drf_yasg.openapi as openapi
 from core.permissions import ViewClassPermission, all_permissions
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import no_body, swagger_auto_schema
-from rest_framework import generics, viewsets
+from rest_framework import generics, viewsets, status
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.exceptions import MethodNotAllowed
@@ -16,7 +17,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from users.functions import check_avatar
 from users.models import User
-from users.serializers import UserSerializer, UserSerializerUpdate
+from users.serializers import UserSerializer, UserSerializerUpdate, UserPasswordUpdateSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -294,3 +295,49 @@ class UserWhoAmIAPI(generics.RetrieveAPIView):
 
     def get(self, request, *args, **kwargs):
         return super(UserWhoAmIAPI, self).get(request, *args, **kwargs)
+
+
+class UserUpdatePasswordAPI(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated,)
+    serializer_class = UserPasswordUpdateSerializer
+
+    def patch(self, request, *args, **kwargs):
+        # 使用 serializer 验证传入的数据
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # 获取当前用户
+        user = request.user
+
+        # 更新用户密码
+        user.set_password(serializer.validated_data['new_password'])
+        user.save()
+
+        return Response({"detail": "Password updated successfully."}, status=status.HTTP_200_OK)
+
+
+class UserUpdateStatusAPI(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated,)
+
+    def patch(self, request, *args, **kwargs):
+        user_id = request.query_params.get("user_id")
+        user = get_object_or_404(User, id=user_id)
+        user_status = request.query_params.get("status")
+        user.is_active = user_status
+        user.save()
+        return Response(status=status.HTTP_200_OK)
+
+
+class UserUpdateStaffAPI(generics.UpdateAPIView):
+    queryset = User.objects.all()
+    permission_classes = (IsAuthenticated,)
+
+    def patch(self, request, *args, **kwargs):
+        user_id = request.query_params.get("user_id")
+        user = get_object_or_404(User, id=user_id)
+        user_staff = request.query_params.get("staff")
+        user.is_staff = user_staff
+        user.save()
+        return Response(status=status.HTTP_200_OK)

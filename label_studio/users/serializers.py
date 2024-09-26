@@ -4,6 +4,7 @@ from core.feature_flags import flag_set
 from core.utils.common import load_func
 from core.utils.db import fast_first
 from django.conf import settings
+from django.contrib.auth import authenticate
 from organizations.models import OrganizationMember
 from rest_flex_fields import FlexFieldsModelSerializer
 from rest_framework import serializers
@@ -86,7 +87,8 @@ class BaseUserSerializer(FlexFieldsModelSerializer):
             'active_organization',
             'allow_newsletters',
             'is_staff',
-            'is_superuser'
+            'is_superuser',
+            'is_active'
         )
 
 
@@ -103,3 +105,21 @@ class UserSimpleSerializer(BaseUserSerializer):
 
 UserSerializer = load_func(settings.USER_SERIALIZER)
 UserSerializerUpdate = load_func(settings.USER_SERIALIZER_UPDATE)
+
+
+class UserPasswordUpdateSerializer(serializers.Serializer):
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+    confirm_password = serializers.CharField(required=True)
+
+    def validate(self, attrs):
+        # 验证用户提供的旧密码
+        user = authenticate(email=self.context['request'].user.email, password=attrs['old_password'])
+        if user is None:
+            raise serializers.ValidationError('Old password error', code='invalid')
+
+        # 验证新密码和确认密码是否一致
+        if attrs['new_password'] != attrs['confirm_password']:
+            raise serializers.ValidationError("New password and confirm password do not match.", code='invalid')
+
+        return attrs

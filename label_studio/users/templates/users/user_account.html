@@ -82,6 +82,39 @@
       </footer>
     </form>
 
+    <form id="password-form" action="{% url 'current-user-password' %}" method="patch">
+        <input type="hidden" name="_method" value="patch"/>
+        <header>Update Password</header>
+
+        <ul>
+            <li class="field">
+                <label for="">Old Password</label>
+                <input type="password" class="lsf-input-ls" name="old_password" id="old_password" required />
+            </li>
+            <li class="field">
+                <label for="">New Password</label>
+                <input type="password" class="lsf-input-ls" name="new_password" id="new_password" required />
+            </li>
+            <li class="field">
+                <label for="">Confirm Password</label>
+                <input type="password" class="lsf-input-ls" name="confirm_password" id="confirm_password" required />
+            </li>
+        </ul>
+        <footer>
+            <button
+                class="lsf-button-ls lsf-button-ls_look_primary"
+                onclick="smart_submit((result) => {
+                  const code = result.status
+                  code != 200 ?
+                    alert('Error: ' + result.responseJSON.validation_errors.non_field_errors[0]) :
+                    alert('Successfully: ' + result.responseJSON.detail)
+                })"
+            >
+                Update
+            </button>
+        </footer>
+    </form>
+
     <!-- Token -->
 {#    <form action="" class="access_token__info">#}
 {#      <header>Access Token</header>#}
@@ -290,6 +323,7 @@
           userpic.classList.add('can_upload')
         }
       }
+
     })();
   </script>
 </div>

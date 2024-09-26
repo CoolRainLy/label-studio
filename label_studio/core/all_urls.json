@@ -456,6 +456,12 @@
         "decorators": ""
     },
     {
+        "url": "api/current-user/password/",
+        "module": "users.api.UserUpdatePasswordAPI",
+        "name": "user-password",
+        "decorators": ""
+    },
+    {
         "url": "/api/users/<pk>/avatar/",
         "module": "users.api.UserAPI",
         "name": "user-avatar",
