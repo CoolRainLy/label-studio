@@ -104,6 +104,7 @@
             <button
                 class="lsf-button-ls lsf-button-ls_look_primary"
                 onclick="smart_submit((result) => {
+                  document.getElementById('password-form').reset()
                   const code = result.status
                   code != 200 ?
                     alert('Error: ' + result.responseJSON.validation_errors.non_field_errors[0]) :

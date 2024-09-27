@@ -6,6 +6,8 @@ from core.feature_flags import flag_set
 from core.mixins import GetParentObjectMixin
 from core.utils.common import load_func
 from django.conf import settings
+from django.db.models import F, Value
+from django.db.models.functions import Concat
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from drf_yasg import openapi
@@ -120,19 +122,24 @@ class OrganizationMemberListAPI(generics.ListAPIView):
 
     def get_queryset(self):
         org = generics.get_object_or_404(self.request.user.organizations, pk=self.kwargs[self.lookup_field])
-        if flag_set('fix_backend_dev_3134_exclude_deactivated_users', self.request.user):
-            serializer = OrganizationsParamsSerializer(data=self.request.GET)
-            serializer.is_valid(raise_exception=True)
-            active = serializer.validated_data.get('active')
-
-            # return only active users (exclude DISABLED and NOT_ACTIVATED)
-            if active:
-                return org.active_members.order_by('user__username')
-
-            # organization page to show all members
-            return org.members.order_by('user__username')
-        else:
-            return org.members.order_by('user__username')
+        # if flag_set('fix_backend_dev_3134_exclude_deactivated_users', self.request.user):
+        #     serializer = OrganizationsParamsSerializer(data=self.request.GET)
+        #     serializer.is_valid(raise_exception=True)
+        #     active = serializer.validated_data.get('active')
+        #
+        #     # return only active users (exclude DISABLED and NOT_ACTIVATED)
+        #     if active:
+        #         return org.active_members.order_by('user__username')
+        #
+        #     # organization page to show all members
+        #     return org.members.order_by('user__username')
+        # else:
+        queryset = org.members.all()
+        name = self.request.GET.get('name', '')
+        queryset = queryset.annotate(
+            full_name=Concat(F('user__first_name'), Value(''), F('user__last_name'))
+        ).filter(full_name__icontains=name)
+        return queryset.order_by('user__username')
 
 
 @method_decorator(

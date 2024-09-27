@@ -4,6 +4,8 @@ import logging
 
 import drf_yasg.openapi as openapi
 from core.permissions import ViewClassPermission, all_permissions
+from django.contrib import auth
+from django.contrib.auth import update_session_auth_hash
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import no_body, swagger_auto_schema
@@ -15,7 +17,7 @@ from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from users.functions import check_avatar
+from users.functions import check_avatar, login
 from users.models import User
 from users.serializers import UserSerializer, UserSerializerUpdate, UserPasswordUpdateSerializer
 
@@ -313,6 +315,8 @@ class UserUpdatePasswordAPI(generics.UpdateAPIView):
         # 更新用户密码
         user.set_password(serializer.validated_data['new_password'])
         user.save()
+
+        update_session_auth_hash(request, user)
 
         return Response({"detail": "Password updated successfully."}, status=status.HTTP_200_OK)
 

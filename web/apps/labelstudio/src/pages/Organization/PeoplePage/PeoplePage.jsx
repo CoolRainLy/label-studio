@@ -16,6 +16,8 @@ import { PeopleList } from "./PeopleList";
 import "./PeoplePage.scss";
 import { SelectedUser } from "./SelectedUser";
 import {checkPermission} from "../../../utils/check-permission";
+import { Form } from 'antd';
+import {usePage, usePageSize} from "../../../components/Pagination/Pagination";
 
 const InvitationModal = ({ link }) => {
   return (
@@ -118,11 +120,53 @@ export const PeoplePage = () => {
     inviteModal.current?.update(inviteModalProps(link));
   }, [link]);
 
+  const [form] = Form.useForm()
+  const [queryParma, setQueryParma] = useState({})
+  const [currentPage] = usePage("page", 1);
+  const [currentPageSize] = usePageSize("page_size", 30);
+  const [usersList, setUsersList] = useState();
+  const [totalItems, setTotalItems] = useState(0);
+  const parmaFormChange = (parma) => {
+    setQueryParma(parma)
+  }
+
+  const fetchUsers = useCallback(async (page, pageSize) => {
+    const response = await api.callApi("memberships", {
+      params: {
+        pk: 1,
+        contributed_to_projects: 1,
+        page,
+        page_size: pageSize,
+        ...queryParma
+      },
+    });
+
+    if (response.results) {
+      setUsersList(response.results);
+      setTotalItems(response.count);
+    }
+  }, [queryParma]);
+
   return (
     <Block name="people">
       <Elem name="controls">
         <Space spread>
-          <Space />
+          <Space >
+            <Form
+              form={form}
+              layout={"inline"}
+              onValuesChange={parmaFormChange}
+            >
+              <Form.Item label="Name" name="name">
+                <Input value={queryParma.name} />
+              </Form.Item>
+              <Form.Item>
+                <Button onClick={() => fetchUsers(currentPage, currentPageSize)} >
+                  Query
+                </Button>
+              </Form.Item>
+            </Form>
+          </Space>
 
           <Space>
             {checkPermission() && <Button icon={<LsPlus/>} primary onClick={showInvitationModal}>
@@ -136,6 +180,13 @@ export const PeoplePage = () => {
           selectedUser={selectedUser}
           defaultSelected={defaultSelected}
           onSelect={(user) => selectUser(user)}
+          fetchUsers={fetchUsers}
+          currentPage={currentPage}
+          currentPageSize={currentPageSize}
+          usersList={usersList}
+          setUsersList={setUsersList}
+          totalItems={totalItems}
+          setTotalItems={setTotalItems}
         />
 
         {selectedUser ? (

@@ -11,30 +11,20 @@ import { CopyableTooltip } from "../../../components/CopyableTooltip/CopyableToo
 import { Switch } from 'antd';
 import {checkIsSuperuser, checkPermission} from "../../../utils/check-permission";
 
-export const PeopleList = ({ onSelect, selectedUser, defaultSelected }) => {
+export const PeopleList = (
+  {
+    onSelect,
+    selectedUser,
+    defaultSelected,
+    fetchUsers,
+    currentPage,
+    currentPageSize,
+    usersList,
+    setUsersList,
+    totalItems,
+    setTotalItems,
+  }) => {
   const api = useAPI();
-  const [usersList, setUsersList] = useState();
-  const [currentPage] = usePage("page", 1);
-  const [currentPageSize] = usePageSize("page_size", 30);
-  const [totalItems, setTotalItems] = useState(0);
-
-  console.log({ currentPage, currentPageSize });
-
-  const fetchUsers = useCallback(async (page, pageSize) => {
-    const response = await api.callApi("memberships", {
-      params: {
-        pk: 1,
-        contributed_to_projects: 1,
-        page,
-        page_size: pageSize,
-      },
-    });
-
-    if (response.results) {
-      setUsersList(response.results);
-      setTotalItems(response.count);
-    }
-  }, []);
 
   const selectUser = useCallback(
     (user) => {
