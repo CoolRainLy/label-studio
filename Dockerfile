@@ -25,7 +25,7 @@ RUN target=${YARN_CACHE_FOLDER},sharing=locked \
 COPY web .
 COPY pyproject.toml ../pyproject.toml
 RUN target=${YARN_CACHE_FOLDER},sharing=locked \
-    --mount=type=bind,source=.git,target=../.git \
+    source=.git,target=../.git \
     yarn run build && yarn version:libs
 
 FROM ubuntu:22.04
