@@ -848,7 +848,7 @@ class ProjectAnnotationAPI(generics.RetrieveAPIView):
 
     def get(self, request, pk):
         project_id = pk
-        project = Project.objects.filter(id=project_id)
+        project = generics.get_object_or_404(Project.objects.for_user(self.request.user), pk=project_id)
         tasks = Task.objects.filter(project_id=project_id)
         annotations = Annotation.objects.filter(task__in=tasks, was_cancelled=False)
         serializer = AnnotationSerializer(annotations, many=True)  # 确保设置 many=True
@@ -858,8 +858,8 @@ class ProjectAnnotationAPI(generics.RetrieveAPIView):
         res = {}
         if label_config.find('PolygonLabels') > 0:
             res = polygon_labels(serializer.data)
-        elif label_config.find('PolygonLabels'):
-            res = polygon_labels(serializer.data)
+        elif label_config.find('RectangleLabels'):
+            res = rectangle_labels(serializer.data)
 
         return Response(res)
 
@@ -876,6 +876,29 @@ def polygon_labels(annotations):
         })
         for result in annotation['result']:
             label = result['value']['polygonlabels'][0]
+            current_count = current_user_result.get('result').setdefault(label, 0)
+            current_user_result.get('result')[label] = current_count + 1
+            current_user_result['count'] += 1
+
+    res2 = []
+    for k, v in res.items():
+        res2.append(v)
+
+    return res2
+
+
+def rectangle_labels(annotations):
+    res = {}
+    for annotation in annotations:
+        user_id = annotation['completed_by']
+        current_user_result = res.setdefault(user_id, {
+            'user_id': user_id,
+            'username': annotation['created_username'].split(",")[0],
+            'count': 0,
+            'result': {},
+        })
+        for result in annotation['result']:
+            label = result['value']['rectanglelabels'][0]
             current_count = current_user_result.get('result').setdefault(label, 0)
             current_user_result.get('result')[label] = current_count + 1
             current_user_result['count'] += 1
