@@ -19,7 +19,7 @@ RUN yarn config set network-timeout 1200000 # HTTP timeout used when downloading
 COPY web/package.json .
 COPY web/yarn.lock .
 COPY web/tools tools
-RUN --mount=type=cache,target=${YARN_CACHE_FOLDER},sharing=locked \
+RUN target=${YARN_CACHE_FOLDER},sharing=locked \
     yarn install --prefer-offline --no-progress --pure-lockfile --frozen-lockfile --ignore-engines --non-interactive --production=false
 
 COPY web .
