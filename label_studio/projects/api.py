@@ -876,9 +876,11 @@ def polygon_labels(annotations):
             'tasks': set()
         })
 
-        current_user_result['tasks'].add(annotation['task'])
+        results = annotation['result']
+        if len(results):
+            current_user_result['tasks'].add(annotation['task'])
 
-        for result in annotation['result']:
+        for result in results:
             label = result['value']['polygonlabels'][0]
             current_count = current_user_result.get('result').setdefault(label, 0)
             current_user_result.get('result')[label] = current_count + 1
@@ -904,9 +906,11 @@ def rectangle_labels(annotations):
             'tasks': set()
         })
 
-        current_user_result['tasks'].add(annotation['task'])
+        results = annotation['result']
+        if len(results):
+            current_user_result['tasks'].add(annotation['task'])
 
-        for result in annotation['result']:
+        for result in results:
             label = result['value']['rectanglelabels'][0]
             current_count = current_user_result.get('result').setdefault(label, 0)
             current_user_result.get('result')[label] = current_count + 1
