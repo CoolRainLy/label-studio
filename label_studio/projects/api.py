@@ -858,7 +858,7 @@ class ProjectAnnotationAPI(generics.RetrieveAPIView):
         res = {}
         if label_config.find('PolygonLabels') > 0:
             res = polygon_labels(serializer.data)
-        elif label_config.find('RectangleLabels'):
+        elif label_config.find('RectangleLabels') > 0:
             res = rectangle_labels(serializer.data)
 
         return Response(res)
@@ -873,7 +873,11 @@ def polygon_labels(annotations):
             'username': annotation['created_username'].split(",")[0],
             'count': 0,
             'result': {},
+            'tasks': set()
         })
+
+        current_user_result['tasks'].add(annotation['task'])
+
         for result in annotation['result']:
             label = result['value']['polygonlabels'][0]
             current_count = current_user_result.get('result').setdefault(label, 0)
@@ -882,6 +886,7 @@ def polygon_labels(annotations):
 
     res2 = []
     for k, v in res.items():
+        v['task_count'] = len(v['tasks'])
         res2.append(v)
 
     return res2
@@ -896,7 +901,11 @@ def rectangle_labels(annotations):
             'username': annotation['created_username'].split(",")[0],
             'count': 0,
             'result': {},
+            'tasks': set()
         })
+
+        current_user_result['tasks'].add(annotation['task'])
+
         for result in annotation['result']:
             label = result['value']['rectanglelabels'][0]
             current_count = current_user_result.get('result').setdefault(label, 0)
@@ -905,6 +914,7 @@ def rectangle_labels(annotations):
 
     res2 = []
     for k, v in res.items():
+        v['task_count'] = len(v['tasks'])
         res2.append(v)
 
     return res2

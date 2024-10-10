@@ -233,7 +233,6 @@ INSTALLED_APPS = [
     'labels_manager',
     'ml_models',
     'ml_model_providers',
-    'mju_auth'
 ]
 
 MIDDLEWARE = [

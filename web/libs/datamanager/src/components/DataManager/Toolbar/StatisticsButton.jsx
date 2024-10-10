@@ -27,7 +27,12 @@ export const StatisticsButton = injector(({ store, size }) => {
       key: 'username'
     },
     {
-      title: '总数',
+      title: '图片总数',
+      dataIndex: 'task_count',
+      key: 'task_count'
+    },
+    {
+      title: '标记总数',
       dataIndex: 'count',
       key: 'count'
     },
